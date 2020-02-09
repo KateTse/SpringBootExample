@@ -1,6 +1,9 @@
 package com.example.controller;
 
+import com.example.controller.exception.PersonInfoNotFoundException;
 import com.example.entity.PersonInfo;
+import com.example.service.PersonInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -9,35 +12,47 @@ import java.util.*;
 @RequestMapping("/person")
 public class PersonController {
 
-    private int nextId = 1;
-    private Map<Integer, PersonInfo> peopleDb = new HashMap<>();
+    @Autowired
+    PersonInfoService personInfoService;
 
     @RequestMapping("/{id}")
     public PersonInfo getPersonInfo(@PathVariable int id) {
-        return peopleDb.get(id);
+        PersonInfo p = personInfoService.get(id);
+        if (p == null) {
+            throw new PersonInfoNotFoundException();
+        }
+        return p;
     }
 
     @PostMapping
     public PersonInfo addPersonInfo(@RequestBody PersonInfo p) {
-        p.setId(nextId++);
-        peopleDb.put(p.getId(), p);
-        return p;
+        return personInfoService.add(p);
     }
 
     @PutMapping("/{id}")
     public PersonInfo updatePersonInfo(@PathVariable int id, @RequestBody PersonInfo p) {
-        p.setId(id);
-        peopleDb.replace(id, p);
-        return peopleDb.get(id);
+        p = personInfoService.updatePersonInfo(id, p);
+        if (p == null) {
+            throw new PersonInfoNotFoundException();
+        }
+        return p;
     }
 
     @DeleteMapping("/{id}")
     public PersonInfo deletePersonInfo(@PathVariable int id) {
-        return peopleDb.remove(id);
+        PersonInfo p = personInfoService.deletePersonInfo(id);
+        if (p == null) {
+            throw new PersonInfoNotFoundException();
+        }
+        return p;
     }
 
     @GetMapping("/all")
     public List<PersonInfo> getPersonInfo() {
-        return new ArrayList<>(peopleDb.values());
+        List<PersonInfo> list = personInfoService.getPersonInfo();
+        if (list == null) {
+            throw new PersonInfoNotFoundException();
+        }
+        return list;
     }
 }
