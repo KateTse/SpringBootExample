@@ -49,10 +49,6 @@ public class PersonController {
 
     @GetMapping("/all")
     public List<PersonInfo> getPersonInfo() {
-        List<PersonInfo> list = personInfoService.getPersonInfo();
-        if (list == null) {
-            throw new PersonInfoNotFoundException();
-        }
-        return list;
+        return personInfoService.getPersonInfo();
     }
 }
