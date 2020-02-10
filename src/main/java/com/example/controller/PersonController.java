@@ -22,6 +22,7 @@ public class PersonController {
             throw new PersonInfoNotFoundException();
         }
         return p;
+
     }
 
     @PostMapping
